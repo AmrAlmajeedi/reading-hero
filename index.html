@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>🦸‍♂️ مغامرة بطل القراءة</title>
+<style>
+  :root{
+    --bg1:#2a0f5e; --bg2:#5b2bb5; --bg3:#9b4dff;
+    --card:rgba(255,255,255,.12); --card-border:rgba(255,255,255,.25);
+    --gold:#ffd54a; --green:#2ecc71; --red:#ff4d6d; --blue:#38b6ff; --orange:#ff9f43;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI","Tahoma","Noto Naskh Arabic",system-ui,sans-serif;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+    background-attachment:fixed;
+    color:#fff; min-height:100vh; padding:12px 12px 40px;
+  }
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:1.5rem;text-align:center;margin:6px 0 2px;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+  .subtitle{text-align:center;opacity:.85;margin:0 0 12px;font-size:1rem}
+  .card{background:var(--card);border:2px solid var(--card-border);border-radius:22px;padding:14px;margin-bottom:12px;backdrop-filter:blur(4px)}
+
+  /* status */
+  .hearts{font-size:2rem;text-align:center;letter-spacing:4px;min-height:2.6rem}
+  .hearts .lost{filter:grayscale(1);opacity:.35}
+  .hearts.shake{animation:shake .5s}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .badge{background:linear-gradient(135deg,#ffb300,#ff6f00);border-radius:16px;padding:6px 14px;font-weight:800;font-size:1.05rem;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+  .stars{font-size:1.5rem}
+  .xpbar{height:22px;background:rgba(0,0,0,.3);border-radius:14px;overflow:hidden;margin-top:10px;position:relative}
+  .xpfill{height:100%;width:0;background:linear-gradient(90deg,#7cff6b,#ffe14a);border-radius:14px;transition:width .5s}
+  .xptext{text-align:center;font-weight:700;margin-top:6px}
+
+  /* mission */
+  .label{font-size:.95rem;opacity:.85;margin-bottom:6px;font-weight:700}
+  .story{font-size:2rem;line-height:1.9;text-align:center;background:#fff;color:#2a1a55;border-radius:18px;padding:14px;font-weight:700}
+  .monster-box{text-align:center;background:rgba(0,0,0,.25);border-radius:18px;padding:14px;margin-top:10px}
+  .monster{font-size:4rem;line-height:1}
+  .monster.appear{animation:pop .6s}
+  .boss-word{font-size:2.4rem;font-weight:800;color:var(--gold);margin-top:6px;text-shadow:0 3px 0 rgba(0,0,0,.3)}
+  .hidden-word{font-size:1.2rem;opacity:.8;margin-top:6px}
+  .msg{min-height:3rem;text-align:center;font-size:1.25rem;font-weight:800;margin:6px 0;color:var(--gold)}
+
+  /* buttons */
+  .btn{
+    display:block;width:100%;border:none;border-radius:20px;padding:16px 12px;margin:8px 0;
+    font-family:inherit;font-size:1.3rem;font-weight:800;color:#fff;cursor:pointer;
+    box-shadow:0 6px 0 rgba(0,0,0,.28);transition:transform .08s, box-shadow .08s;min-height:62px;
+  }
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+  .btn:disabled{opacity:.5;filter:grayscale(.6)}
+  .b-start{background:linear-gradient(135deg,#7b61ff,#b24dff)}
+  .b-monster{background:linear-gradient(135deg,#ff7a00,#ff3d00)}
+  .b-correct{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+  .b-defeat{background:linear-gradient(135deg,#8e44ad,#e056fd)}
+  .b-self{background:linear-gradient(135deg,#f1c40f,#f39c12);color:#3a2a00}
+  .b-help{background:linear-gradient(135deg,#2980b9,#38b6ff)}
+  .b-rush{background:linear-gradient(135deg,#d63031,#ff4d6d)}
+  .b-star{background:linear-gradient(135deg,#ffd54a,#ff9f1a);color:#3a2a00}
+  .b-plain{background:rgba(255,255,255,.2);font-size:1.1rem;min-height:54px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid2 .btn{font-size:1.1rem;padding:14px 6px}
+
+  /* parent */
+  textarea,input[type=text]{
+    width:100%;font-family:inherit;font-size:1.3rem;padding:12px;border-radius:14px;border:none;
+    background:#fff;color:#2a1a55;direction:rtl;
+  }
+  textarea{min-height:90px;resize:vertical}
+  .tips{font-size:1rem;line-height:1.8;opacity:.95}
+  .tips li{margin-bottom:2px}
+  .warn{color:#ffd1d1;font-size:.95rem;margin:4px 0}
+  .log{max-height:240px;overflow:auto;font-size:1.05rem;line-height:1.8}
+  .log div{border-bottom:1px dashed rgba(255,255,255,.2);padding:3px 0}
+  .log small{opacity:.65;margin-inline-start:6px}
+
+  /* level-up overlay */
+  .overlay{position:fixed;inset:0;background:rgba(20,5,50,.88);display:none;align-items:center;justify-content:center;z-index:50;text-align:center;padding:20px}
+  .overlay.show{display:flex}
+  .overlay .big{font-size:2.4rem;font-weight:900;color:var(--gold);animation:pop .8s}
+  .overlay .sm{font-size:1.4rem;margin:12px 0 20px}
+  .overlay .emoji{font-size:5rem;animation:bounce 1s infinite}
+  .confetti{position:fixed;top:-20px;font-size:1.8rem;animation:fall linear forwards;z-index:60;pointer-events:none}
+
+  @keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  @keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.8}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🦸‍♂️ مغامرة بطل القراءة</h1>
+  <p class="subtitle">أنت فارس القراءة… والكلمات الصعبة هي الوحوش! 🐲</p>
+
+  <!-- STATUS -->
+  <div class="card">
+    <div class="hearts" id="hearts"></div>
+    <div class="row" style="margin-top:8px">
+      <div class="badge" id="levelBadge">المستوى 1 — فارس القراءة</div>
+      <div class="stars" id="stars"></div>
+    </div>
+    <div class="xpbar"><div class="xpfill" id="xpfill"></div></div>
+    <div class="xptext" id="xptext"></div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="card">
+    <div class="label">📜 مهمة اليوم</div>
+    <div class="story" id="story"></div>
+
+    <div class="monster-box">
+      <div class="monster" id="monster">🥚</div>
+      <div id="bossArea" class="hidden-word">فيه وحش مختبئ في المهمة…</div>
+    </div>
+
+    <div class="msg" id="msg">جاهز يا بطل؟ اضغط ابدأ المهمة!</div>
+  </div>
+
+  <!-- ACTIONS (parent presses these) -->
+  <div class="card">
+    <div class="label">🎮 أزرار المغامرة (البابا / الماما يضغطون)</div>
+    <button class="btn b-start" id="btnStart">🔊 ابدأ المهمة صوتيًا</button>
+    <button class="btn b-monster" id="btnMonster">👀 ظهر الوحش!</button>
+    <button class="btn b-correct" id="btnCorrect">🟢 قريتها صح!</button>
+    <button class="btn b-defeat" id="btnDefeat">🐲 هزمت الوحش!</button>
+    <button class="btn b-self" id="btnSelf">💡 صححت بنفسي</button>
+    <div class="grid2">
+      <button class="btn b-help" id="btnHelp">🆘 احتجت مساعدة</button>
+      <button class="btn b-rush" id="btnRush">💨 استعجلت</button>
+    </div>
+    <button class="btn b-star" id="btnStar">⭐ أنهيت مهمة اليوم</button>
+  </div>
+
+  <!-- PARENT MODE -->
+  <div class="card">
+    <button class="btn b-plain" id="btnParent">👨‍👦 وضع بابا</button>
+    <div id="parentPanel" style="display:none">
+      <div class="label" style="margin-top:10px">نص القراءة لليوم</div>
+      <textarea id="storyInput" placeholder="اكتب جملة اليوم…"></textarea>
+
+      <div class="label" style="margin-top:12px">الكلمة الصعبة (الوحش)</div>
+      <input type="text" id="bossInput" placeholder="مثال: المدرسة">
+
+      <button class="btn b-correct" id="btnSave">💾 حفظ المهمة</button>
+      <button class="btn b-plain" id="btnToggleSound">🔈 الصوت: تشغيل</button>
+      <button class="btn b-plain" id="btnTest">🔔 اختبار الأصوات</button>
+      <div id="testWarn" class="warn"></div>
+
+      <div class="label" style="margin-top:12px">💡 اقتراح تدرّج الأيام</div>
+      <ol class="tips">
+        <li>اليوم 1: سطر واحد فقط</li>
+        <li>اليوم 2: سطر + تحديد كلمة صعبة</li>
+        <li>اليوم 3: سطر + مكافأة التصحيح الذاتي</li>
+        <li>اليوم 4: سطران</li>
+        <li>اليوم 5: سطران + وحش كلمة صعبة</li>
+        <li>اليوم 6: سطران بقراءة هادئة</li>
+        <li>اليوم 7: يوم الزعيم — سطران + 3 كلمات صعبة 🏆</li>
+      </ol>
+      <div class="tips" style="margin-top:6px">
+        ✅ محاولة ثم خطأ = لا يخسر قلبًا<br>
+        ✅ طلب المساعدة مقبول (−1 نقطة فقط، بدون خسارة قلب)<br>
+        💨 التخمين / الاستعجال فقط = −1 قلب
+      </div>
+
+      <button class="btn b-plain" id="btnReset" style="background:rgba(255,77,109,.35)">🗑️ تصفير كل التقدّم</button>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="card">
+    <div class="label">📖 سجل المغامرة</div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<!-- LEVEL UP -->
+<div class="overlay" id="overlay">
+  <div>
+    <div class="emoji">🎉🦸‍♂️🎉</div>
+    <div class="big">ترقيييييييية!</div>
+    <div class="sm" id="overlayText">أصبحت الآن فارس قراءة أقوى!</div>
+    <button class="btn b-star" id="btnOverlay">يلا نكمل! 🚀</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   إعدادات سهلة التعديل
+   ===================================================== */
+const SOUNDS = {
+  start:           "sounds/start.mp3",
+  correct:         "sounds/correct.mp3",
+  monsterAppear:   "sounds/monster-appear.mp3",
+  monsterDefeated: "sounds/monster-defeated.mp3",
+  help:            "sounds/help.mp3",
+  rushed:          "sounds/rushed.mp3",
+  selfCorrect:     "sounds/self-correct.mp3",
+  heartLost:       "sounds/heart-lost.mp3",
+  star:            "sounds/star.mp3",
+  levelUp:         "sounds/level-up.mp3",
+  done:            "sounds/end-day.mp3"
+};
+
+const MAX_HEARTS = 5;
+const XP = {
+  correct: 3,        // قرأ الجملة صح
+  defeat: 3,         // هزم الوحش
+  selfCorrect: 4,    // صحح نفسه
+  help: -1,          // طلب مساعدة (بدون خسارة قلب)
+  star: 1            // مكافأة صغيرة عند إنهاء مهمة اليوم
+};
+const xpNeeded = lvl => 20 + (lvl - 1) * 10;   // XP المطلوبة للترقية من هذا المستوى
+const TITLES = ["فارس القراءة","فارس القراءة الشجاع","بطل الكلمات","صائد الوحوش","أسطورة القراءة"];
+
+const DEFAULT_STATE = {
+  hearts: MAX_HEARTS,
+  xp: 0,
+  stars: 0,
+  level: 1,
+  sound: true,
+  story: "ذهب سامي إلى الحديقة مع أخته.",
+  boss: "الحديقة",
+  log: [],
+  heartsDate: "",
+  completedDate: "",
+  lastPlayedDate: "",
+  totalXp: 0
+};
+const STORAGE_KEY = "readingHeroAdventure_v1";
+
+/* =====================================================
+   الحالة + التخزين
+   ===================================================== */
+let state = loadState();
+let monsterShown = false;
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function dailyReset(){
+  const t = todayStr();
+  if(state.heartsDate !== t){
+    state.hearts = MAX_HEARTS;      // القلوب تتجدد كل يوم
+    state.heartsDate = t;           // XP والمستوى والنجوم لا تُمسّ
+    saveState();
+  }
+}
+
+/* =====================================================
+   نظام الصوت (ملفات MP3 فقط)
+   ===================================================== */
+const audioCache = {};
+let currentAudio = null;
+let soundToken = 0;
+
+function getAudio(key){
+  if(!SOUNDS[key]) return null;
+  if(!audioCache[key]){
+    try{
+      const a = new Audio(SOUNDS[key]);
+      a.preload = "auto";
+      audioCache[key] = a;
+    }catch(e){ return null; }
+  }
+  return audioCache[key];
+}
+function stopSound(){
+  soundToken++;
+  if(currentAudio){
+    try{ currentAudio.pause(); currentAudio.currentTime = 0; }catch(e){}
+    currentAudio = null;
+  }
+}
+/* يشغّل الصوت ويرجع Promise تتحقق عند انتهائه (أو عند الفشل) —
+   resolve(true) إذا اشتغل، resolve(false) إذا الملف ناقص أو ممنوع. لا يرمي خطأ أبدًا. */
+function playSound(key, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    if(!state.sound && !opts.force){ resolve(false); return; }
+    const a = getAudio(key);
+    if(!a){ resolve(false); return; }
+    stopSound();
+    const myToken = soundToken;
+    currentAudio = a;
+    let done = false;
+    const finish = ok => {
+      if(done) return; done = true;
+      a.removeEventListener("ended", onEnd);
+      a.removeEventListener("error", onErr);
+      resolve(ok);
+    };
+    const onEnd = () => finish(true);
+    const onErr = () => finish(false);
+    a.addEventListener("ended", onEnd);
+    a.addEventListener("error", onErr);
+    try{
+      a.currentTime = 0;
+      const p = a.play();
+      if(p && p.catch) p.catch(() => finish(false));
+    }catch(e){ finish(false); }
+    // لو تم إيقافه بصوت آخر لا ننتظر للأبد
+    const watch = setInterval(() => {
+      if(done){ clearInterval(watch); return; }
+      if(myToken !== soundToken){ clearInterval(watch); finish(false); }
+    }, 200);
+  });
+}
+
+/* =====================================================
+   واجهة المستخدم
+   ===================================================== */
+const $ = id => document.getElementById(id);
+
+function render(){
+  // hearts
+  let h = "";
+  for(let i=0;i<MAX_HEARTS;i++){
+    h += i < state.hearts ? "<span>❤️</span>" : '<span class="lost">🖤</span>';
+  }
+  $("hearts").innerHTML = h;
+
+  // level / xp
+  const need = xpNeeded(state.level);
+  const title = TITLES[Math.min(state.level-1, TITLES.length-1)];
+  $("levelBadge").textContent = "المستوى " + state.level + " — " + title;
+  $("xptext").textContent = "XP: " + state.xp + " / " + need;
+  $("xpfill").style.width = Math.min(100, (state.xp/need)*100) + "%";
+
+  // stars: show the last 5 as a row + total
+  const total = state.stars;
+  const shown = Math.min(total, 5);
+  $("stars").textContent = (total === 0 ? "☆☆☆☆☆" : "⭐".repeat(shown) + "☆".repeat(5-shown)) + (total>5 ? " ×"+total : "");
+
+  // mission
+  $("story").textContent = state.story;
+  if(monsterShown){
+    $("monster").textContent = "🐲";
+    $("bossArea").className = "boss-word";
+    $("bossArea").textContent = state.boss;
+  }else{
+    $("monster").textContent = "🥚";
+    $("bossArea").className = "hidden-word";
+    $("bossArea").textContent = "فيه وحش مختبئ في المهمة…";
+  }
+
+  // sound button + daily star
+  $("btnToggleSound").textContent = state.sound ? "🔈 الصوت: تشغيل" : "🔇 الصوت: إيقاف";
+  const done = state.completedDate === todayStr();
+  $("btnStar").disabled = done;
+  $("btnStar").textContent = done ? "✅ أنهيت مهمة اليوم — نشوفك بكرة!" : "⭐ أنهيت مهمة اليوم";
+
+  // log
+  const logEl = $("log");
+  logEl.innerHTML = "";
+  if(!state.log.length){
+    logEl.textContent = "لسه ما بدأت المغامرة… 🚀";
+  }
+  state.log.slice(0,40).forEach(item => {
+    const d = document.createElement("div");
+    d.textContent = item.text;
+    const s = document.createElement("small");
+    s.textContent = item.date || "";
+    d.appendChild(s);
+    logEl.appendChild(d);
+  });
+}
+
+function say(text){ $("msg").textContent = text; }
+
+function addLog(text){
+  state.log.unshift({ text: text, date: todayStr() });
+  if(state.log.length > 100) state.log.length = 100;
+}
+
+/* يضيف XP (أو ينقص) مع التعامل مع الترقية. يرجع true إذا حصلت ترقية */
+function addXp(n){
+  let leveled = false;
+  state.xp += n;
+  if(n > 0) state.totalXp += n;
+  if(state.xp < 0) state.xp = 0;
+  while(state.xp >= xpNeeded(state.level)){
+    state.xp -= xpNeeded(state.level);
+    state.level++;
+    leveled = true;
+  }
+  return leveled;
+}
+
+/* بعد أي مكافأة: احفظ، ارسم، وإذا فيه ترقية اعرض الاحتفال */
+function afterReward(leveled, soundPromise){
+  saveState();
+  render();
+  if(leveled){
+    const go = () => celebrateLevelUp();
+    if(soundPromise) soundPromise.then(go); else go();
+  }
+}
+
+function celebrateLevelUp(){
+  addLog("🆙 ارتفع للمستوى " + state.level);
+  saveState(); render();
+  $("overlayText").textContent = "وصلت للمستوى " + state.level + " — أصبحت الآن فارس قراءة أقوى!";
+  $("overlay").classList.add("show");
+  confetti();
+  playSound("levelUp");
+}
+
+function confetti(){
+  const items = ["⭐","🎉","✨","🏆","💫","🌟"];
+  for(let i=0;i<28;i++){
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = items[Math.floor(Math.random()*items.length)];
+    c.style.left = Math.random()*100 + "vw";
+    c.style.animationDuration = (2 + Math.random()*2.5) + "s";
+    c.style.animationDelay = (Math.random()*0.6) + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5500);
+  }
+}
+
+/* =====================================================
+   الأحداث (يضغطها الأب / الأم)
+   ===================================================== */
+$("btnStart").onclick = () => {
+  state.lastPlayedDate = todayStr();
+  addLog("⭐ بدأت مغامرة بطل القراءة");
+  say("يلااا نبدأ! اقرأ بهدوء يا بطل 🦸‍♂️");
+  saveState(); render();
+  playSound("start");
+};
+
+$("btnMonster").onclick = () => {
+  monsterShown = true;
+  say("وقف يا بطل! قدامك كلمة صعبة 🐲");
+  render();
+  const m = $("monster");
+  m.classList.remove("appear"); void m.offsetWidth; m.classList.add("appear");
+  playSound("monsterAppear");
+};
+
+$("btnCorrect").onclick = () => {
+  const lv = addXp(XP.correct);
+  addLog("🟢 قرأ المهمة بشكل صحيح (+" + XP.correct + " XP)");
+  say("أحسنت! قريتها صح! +" + XP.correct + " نقاط 🌟");
+  const p = playSound("correct");
+  afterReward(lv, p);
+};
+
+$("btnDefeat").onclick = () => {
+  monsterShown = true;
+  const lv = addXp(XP.defeat);
+  addLog("🐲 هزم الوحش «" + state.boss + "» (+" + XP.defeat + " XP)");
+  say("هزمت الوحش يا بطل! +" + XP.defeat + " نقاط 🎉");
+  $("monster").textContent = "💥";
+  setTimeout(() => { if(monsterShown) $("monster").textContent = "🏳️"; }, 900);
+  const p = playSound("monsterDefeated");
+  saveState();
+  // نرسم الباقي بدون أن نمسح رمز الوحش المهزوم فورًا
+  const keepMonster = $("monster").textContent;
+  render();
+  $("monster").textContent = keepMonster;
+  if(lv) p.then(celebrateLevelUp);
+};
+
+$("btnSelf").onclick = () => {
+  const lv = addXp(XP.selfCorrect);
+  addLog("💡 صحح نفسه (+" + XP.selfCorrect + " XP)");
+  say("لقطت غلطتك بنفسك! هذي قوة خارقة 💪 +" + XP.selfCorrect);
+  const p = playSound("selfCorrect");
+  afterReward(lv, p);
+};
+
+$("btnHelp").onclick = () => {
+  // مهم: لا يخسر قلبًا أبدًا، فقط -1 XP
+  addXp(XP.help);
+  addLog("🆘 طلب المساعدة (−1 XP، بدون خسارة قلب)");
+  say("ولا يهمك يا بطل! المهم إنك حاولت 💙");
+  saveState(); render();
+  playSound("help");
+};
+
+$("btnRush").onclick = () => {
+  if(state.hearts > 0) state.hearts--;
+  addLog("💨 استعجل وخسر قلبًا");
+  const left = state.hearts;
+  say(left > 0 ? "على مهلك يا بطل! باقي لك " + left + " قلوب ❤️" : "على مهلك يا بطل! الوحش لسه ما استسلم، جرّب من جديد 💪");
+  saveState(); render();
+  const h = $("hearts"); h.classList.remove("shake"); void h.offsetWidth; h.classList.add("shake");
+  // نشغّل صوت الاستعجال ثم صوت القلب واحدًا بعد الآخر حتى لا يتداخلا
+  playSound("rushed").then(ok => { if(ok) playSound("heartLost"); });
+};
+
+$("btnStar").onclick = () => {
+  const t = todayStr();
+  if(state.completedDate === t) return;   // نجمة واحدة فقط في اليوم
+  state.completedDate = t;
+  state.stars += 1;
+  const lv = addXp(XP.star);
+  addLog("⭐ أكمل مهمة اليوم");
+  say("نجمة جديدة! نشوفك بكرة يا بطل 🌟");
+  const p = playSound("star");
+  confetti();
+  playSound("done");
+  afterReward(lv, p);
+};
+
+$("btnOverlay").onclick = () => { $("overlay").classList.remove("show"); stopSound(); };
+
+/* ---------- وضع بابا ---------- */
+$("btnParent").onclick = () => {
+  const p = $("parentPanel");
+  const open = p.style.display === "none";
+  p.style.display = open ? "block" : "none";
+  if(open){
+    $("storyInput").value = state.story;
+    $("bossInput").value = state.boss;
+  }
+};
+$("btnSave").onclick = () => {
+  const s = $("storyInput").value.trim();
+  const b = $("bossInput").value.trim();
+  if(s) state.story = s;
+  if(b) state.boss = b;
+  monsterShown = false;
+  saveState(); render();
+  say("تم حفظ مهمة جديدة! جاهز يا بطل؟ 🚀");
+};
+$("btnToggleSound").onclick = () => {
+  state.sound = !state.sound;
+  if(!state.sound) stopSound();
+  saveState(); render();
+};
+$("btnReset").onclick = () => {
+  if(confirm("متأكد؟ سيتم مسح XP والمستوى والنجوم والسجل.")){
+    const keepStory = state.story, keepBoss = state.boss;
+    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    state.story = keepStory; state.boss = keepBoss;
+    state.heartsDate = todayStr();
+    monsterShown = false;
+    saveState(); render();
+    say("بداية جديدة! 🦸‍♂️");
+  }
+};
+
+/* ---------- اختبار الأصوات (واحد بعد الآخر) ---------- */
+let testing = false;
+$("btnTest").onclick = async () => {
+  if(testing) return;
+  testing = true;
+  const warn = $("testWarn");
+  warn.textContent = "";
+  const missing = [];
+  const keys = Object.keys(SOUNDS);
+  for(let i=0;i<keys.length;i++){
+    const k = keys[i];
+    $("btnTest").textContent = "🔔 جاري اختبار " + (i+1) + "/" + keys.length + "…";
+    const ok = await playSound(k, { force: true });
+    if(!ok) missing.push(SOUNDS[k]);
+  }
+  $("btnTest").textContent = "🔔 اختبار الأصوات";
+  warn.textContent = missing.length
+    ? "⚠️ ملفات لم تعمل أو غير موجودة: " + missing.join("، ")
+    : "✅ كل الأصوات اشتغلت!";
+  testing = false;
+};
+
+/* =====================================================
+   تشغيل
+   ===================================================== */
+dailyReset();
+render();
+// تحميل مسبق هادئ للملفات (بدون تشغيل تلقائي)
+Object.keys(SOUNDS).forEach(k => { try{ getAudio(k); }catch(e){} });
+</script>
+</body>
+</html>
